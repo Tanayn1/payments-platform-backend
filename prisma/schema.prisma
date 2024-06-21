@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @unique @default(uuid()) @id
+  name String
+  hashedPassword String
+  hashedRefeshToken String?
+  email String @unique
+  createdAt DateTime @default(now())
+}
+
+model companies {
+  id String @unique @default(uuid()) @id
+  shareHolders Json[] 
+  storeBalance Int @default(0)
+  testmode Boolean
+  currency String
+  createdAt DateTime @default(now())
+}
+
+model payments {
+  id String @unique @default(uuid()) @id
+  storeId String
+  status String
+  amount Int
+  currency String
+  testmode Boolean
+  type String
+  createdAt DateTime @default(now())
+}
+
+model products {
+  id String @unique @default(uuid()) @id
+  name String
+  storeId String
+  testmode Boolean
+  type String
+}
+
+model prices {
+  id String @unique @default(uuid()) @id
+  price Int
+  productId String
+  storeId String
+  billingPeriod String?
+  testmode Boolean
+  currency String
+}
+
+model checkoutSessions {
+  id String @unique @default(uuid()) @id
+  storeId String
+  productIds String[]
+  priceIds String[]
+  companyName String
+  productNames Json[]
+  amount Int
+  currency String
+  status String
+  testmode Boolean
+  type String
+  billingPeriod String?
+  trialPeriod Int?
+  createdAt DateTime @default(now())
+  expiry DateTime
+  description String?
+  cancelUrl String
+  successUrl String 
+}
+
+model subscriptions {
+  id String @unique @default(uuid()) @id
+  customerId String
+  storeId String
+  productId String
+  priceId String
+  status String 
+  testmode Boolean
+  createdAt DateTime @default(now())
+}
+
+model customers {
+  id String @unique @default(uuid()) @id
+  storeId String
+  name String 
+  payments String[]
+  testmode Boolean
+  createdAt DateTime @default(now())
+}
+
+model webHooks {
+  id String @unique @default(uuid()) @id
+  testMode Boolean
+  storeId String
+  events String[]
+  webhookUrl String
+}
+
+model webHookResponses {
+  id String @id
+  storeId String
+  testMode Boolean
+  response Json
+  webhookUrl String
+}

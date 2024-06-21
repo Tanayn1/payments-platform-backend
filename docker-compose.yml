@@ -1,0 +1,9 @@
+services:
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=trustflow
+    ports:
+      - '5432:5432'
