@@ -24,16 +24,20 @@ model User {
 
 model companies {
   id String @unique @default(uuid()) @id
+  name String
+  owner String 
   shareHolders Json[] 
   storeBalance Int @default(0)
   testmode Boolean
   currency String
+  isStoreActivated Boolean
   createdAt DateTime @default(now())
 }
 
 model payments {
   id String @unique @default(uuid()) @id
   storeId String
+  priceIds String[]
   status String
   amount Int
   currency String
@@ -113,6 +117,28 @@ model webHookResponses {
   id String @id
   storeId String
   testMode Boolean
+  webhookSent Json
   response Json
   webhookUrl String
+}
+
+model apiKeys {
+  id String @unique @default(uuid()) @id
+  storeId String
+  testKey Boolean
+  scopes String[]
+  isActive Boolean
+  createdAt DateTime @default(now())
+
+
+}
+
+model paymentLinks {
+  id String @unique @default(uuid()) @id
+  storeId String
+  testMode Boolean
+  type String
+  isActive Boolean
+  createdAt DateTime @default(now())
+
 }

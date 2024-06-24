@@ -29,10 +29,12 @@ export class AuthService {
         const user = await this.prisma.user.findUnique({where: {email: email}});
         if (!user) throw new BadRequestException('Could Not Create User')
         const payload = { sub: user.id, username: user.name}
-        const token = await this.jwtService.signAsync(payload, { secret: jwtSecret })
+        const token = await this.jwtService.signAsync(payload, { secret: jwtSecret, expiresIn: '1h' },)
+
         res.cookie('token', token, {
             httpOnly: true,
             secure: true,
+            expires: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
         });
         return res.send({message: 'Success'})
     }
@@ -44,9 +46,13 @@ export class AuthService {
         const isMatch = await bcrypt.compare(password, user.hashedPassword)
         if (!isMatch) throw new BadRequestException('Invalid Login Credentials')
         const payload = { sub: user.id, username: user.name}
-        const token = await this.jwtService.signAsync(payload, { secret: jwtSecret })
+        const token = await this.jwtService.signAsync(payload, { secret: jwtSecret,  expiresIn: '1h' })
         if (!token) throw new BadRequestException('Internal Server Error');
-        res.cookie('token', token);
+        res.cookie('token', token,  {
+            httpOnly: true,
+            secure: true,
+            expires: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
+        });
         return res.send({message: 'Success'})
     }
 

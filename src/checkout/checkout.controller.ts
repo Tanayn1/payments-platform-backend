@@ -5,7 +5,7 @@ import { checkoutSessionDto } from './dto/checkout.dto';
 
 @Controller('checkout')
 export class CheckoutController {
-    constructor(private checkoutService: CheckoutService) {}
+    constructor(private readonly checkoutService: CheckoutService) {}
 
     @Post('createSession')
     async checkout(@Body() dto : checkoutSessionDto, @Req() req : Request, @Res() res : Response,) {

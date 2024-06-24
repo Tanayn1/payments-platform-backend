@@ -35,17 +35,21 @@ export class CheckoutService {
 
             const checkoutSession = await this.prisma.checkoutSessions.create({
                 data: {
-                    priceId: priceIDs,
-                    productId: productIDs,
+                    priceIds: priceIDs,
+                    productIds: productIDs,
                     storeId: store.id,
-                    currency: price.currency,
+                    currency: store.currency,
                     amount: total,
                     type: product.type,
                     billingPeriod: price.billingPeriod,
                     testmode: store.testmode,
                     trialPeriod: trialLength ? trialLength as number : 0,
                     status: 'pending',
-                    productNames: productNames
+                    productNames: productNames,
+                    cancelUrl: '',
+                    successUrl: '',
+                    companyName: store.name,
+                    expiry: ''
                     
                 }
             });
@@ -71,14 +75,15 @@ export class CheckoutService {
                         method: "POST",
                         body: body
                     })
-
+                    //change this
                     await this.prisma.webHookResponses.create({ 
                         data: {
                             id: webhook.id,
                             storeId: webhook.storeId,
                             testMode: webhook.testMode,
                             response:  response ? JSON.stringify(response) : JSON.stringify({error: "Not Found", status: 404}),
-                            webhookUrl: webhook.url
+                            webhookUrl: webhook.url,
+                            webhookSent: body
                     }})
                 } catch (error) {
                     console.log(error)
@@ -92,10 +97,10 @@ export class CheckoutService {
 
     }
 
-    async updateCheckoutSession(checkoutSessionId : string, status : string) {
+    async cancelCheckoutSession(checkoutSessionId : string, status : string) {
         await this.prisma.checkoutSessions.update({
             where: {id: checkoutSessionId}, 
-            data: {status: status}})
+            data: {status: 'cancelled'}})
     }
 
     async fetchCheckoutSession(checkoutSessionId : string) {
