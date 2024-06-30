@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,131 +8,143 @@ datasource db {
 }
 
 model User {
-  id String @unique @default(uuid()) @id
-  name String
-  hashedPassword String
+  id                String   @id @unique @default(uuid())
+  name              String
+  hashedPassword    String
   hashedRefeshToken String?
-  email String @unique
-  createdAt DateTime @default(now())
+  email             String   @unique
+  createdAt         DateTime @default(now())
 }
 
 model companies {
-  id String @unique @default(uuid()) @id
-  name String
-  owner String 
-  shareHolders Json[] 
-  storeBalance Int @default(0)
-  testmode Boolean
-  currency String
-  isStoreActivated Boolean
-  createdAt DateTime @default(now())
+  id           String   @id @unique @default(uuid())
+  shareHolders Json[]
+  storeBalance Int      @default(0)
+  createdAt    DateTime @default(now())
+  testmode     Boolean
+  currency     String
+  name         String
+  owner        String
 }
 
 model payments {
-  id String @unique @default(uuid()) @id
-  storeId String
-  priceIds String[]
-  status String
-  amount Int
-  currency String
-  testmode Boolean
-  type String
+  id        String   @id @unique @default(uuid())
+  storeId   String
+  status    String
+  amount    Int
+  currency  String
+  type      String
   createdAt DateTime @default(now())
+  testmode  Boolean
+  priceIds  String[]
 }
 
 model products {
-  id String @unique @default(uuid()) @id
-  name String
-  storeId String
+  id       String  @id @unique @default(uuid())
+  storeId  String
+  description   String
   testmode Boolean
-  type String
+  name     String
+  imageUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 model prices {
-  id String @unique @default(uuid()) @id
-  price Int
-  productId String
-  storeId String
+  id            String  @id @unique @default(uuid())
+  productId     String
+  storeId       String
+  currency      String
+  price         Int
   billingPeriod String?
-  testmode Boolean
-  currency String
+  priceType     String
+  testmode      Boolean
+  createdAt DateTime @default(now())
+
 }
 
 model checkoutSessions {
-  id String @unique @default(uuid()) @id
-  storeId String
-  productIds String[]
-  priceIds String[]
-  companyName String
-  productNames Json[]
-  amount Int
-  currency String
-  status String
-  testmode Boolean
-  type String
+  id            String   @id @unique @default(uuid())
+  storeId       String
+  currency      String
+  status        String
+  createdAt     DateTime @default(now())
+  amount        Int
   billingPeriod String?
-  trialPeriod Int?
-  createdAt DateTime @default(now())
-  expiry DateTime
-  description String?
-  cancelUrl String
-  successUrl String 
+  testmode      Boolean
+  type          String
+  trialPeriod   Int?
+  cancelUrl     String
+  companyName   String
+  description   String?
+  expiry        DateTime
+  productNames  Json[]
+  successUrl    String
+  priceIds      String[]
+  productIds    String[]
 }
 
 model subscriptions {
-  id String @unique @default(uuid()) @id
+  id         String   @id @unique @default(uuid())
   customerId String
-  storeId String
-  productId String
-  priceId String
-  status String 
-  testmode Boolean
-  createdAt DateTime @default(now())
+  storeId    String
+  productId  String
+  status     String
+  createdAt  DateTime @default(now())
+  testmode   Boolean
+  priceId    String
 }
 
 model customers {
-  id String @unique @default(uuid()) @id
-  storeId String
-  name String 
-  payments String[]
-  testmode Boolean
+  id        String   @id @unique @default(uuid())
+  storeId   String
+  name      String
+  payments  String[]
   createdAt DateTime @default(now())
+  testmode  Boolean
 }
 
 model webHooks {
-  id String @unique @default(uuid()) @id
-  testMode Boolean
-  storeId String
-  events String[]
+  id         String   @id @unique @default(uuid())
+  testMode   Boolean
+  storeId    String
+  events     String[]
   webhookUrl String
 }
 
 model webHookResponses {
-  id String @id
-  storeId String
-  testMode Boolean
+  id          String  @id
+  storeId     String
+  testMode    Boolean
+  response    Json
+  webhookUrl  String
   webhookSent Json
-  response Json
-  webhookUrl String
 }
 
 model apiKeys {
-  id String @unique @default(uuid()) @id
-  storeId String
-  testKey Boolean
-  scopes String[]
-  isActive Boolean
+  id        String   @id @unique @default(uuid())
+  testKey   Boolean
+  scopes    String[]
+  isActive  Boolean
   createdAt DateTime @default(now())
-
-
+  storeId   String
 }
 
-model paymentLinks {
-  id String @unique @default(uuid()) @id
-  storeId String
-  testMode Boolean
-  type String
-  isActive Boolean
-  createdAt DateTime @default(now())
-
+model paymentForms {
+  id            String   @id @unique @default(uuid())
+  storeId       String
+  currency      String
+  status        String
+  createdAt     DateTime @default(now())
+  amount        Int
+  testmode      Boolean
+  trialPeriod   Int?
+  cancelUrl     String
+  companyName   String
+  productNames  Json[]
+  successUrl    String
+  pricesIds      Json[]
+  productIds    Json[]
+  collectBilling Boolean
+  collectPhone Boolean
 }

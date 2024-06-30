@@ -6,3 +6,33 @@ export class checkoutSessionDto {
     
     trialLength: Number
 }
+
+
+export class PaymentFormDto {
+    @IsNotEmpty()
+    storeId: string
+
+    @IsNotEmpty()
+    trialLength: number
+
+    @IsNotEmpty()
+    collectBilling: boolean
+
+    @IsNotEmpty()
+    collectPhoneNumber: boolean
+
+    @IsNotEmpty()
+    priceIds: Array<any>
+
+    @IsNotEmpty()
+    ProductIds: Array<any>
+
+    @IsNotEmpty()
+    successUrl: string
+
+    @IsNotEmpty()
+    cancelUrl: string
+
+  
+
+}

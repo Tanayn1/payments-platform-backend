@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { checkoutSessionDto } from './dto/checkout.dto';
+import { PaymentFormDto, checkoutSessionDto } from './dto/checkout.dto';
 
 @Injectable()
 export class CheckoutService {
@@ -40,7 +40,6 @@ export class CheckoutService {
                     storeId: store.id,
                     currency: store.currency,
                     amount: total,
-                    type: product.type,
                     billingPeriod: price.billingPeriod,
                     testmode: store.testmode,
                     trialPeriod: trialLength ? trialLength as number : 0,
@@ -49,7 +48,8 @@ export class CheckoutService {
                     cancelUrl: '',
                     successUrl: '',
                     companyName: store.name,
-                    expiry: ''
+                    expiry: '',
+                    type: price.priceType
                     
                 }
             });
@@ -106,5 +106,59 @@ export class CheckoutService {
     async fetchCheckoutSession(checkoutSessionId : string) {
         const checkoutSession = await this.prisma.checkoutSessions.findUnique({where: {id: checkoutSessionId}});
         return checkoutSession;
+    }
+
+    async createPaymentForm(dto : PaymentFormDto, userID : string, res : Response) {
+        const { storeId, trialLength, collectBilling, 
+        collectPhoneNumber, priceIds, 
+        ProductIds, successUrl, cancelUrl } = dto
+        const store = await this.prisma.companies.findUnique({where: { id: storeId  }})
+        if (store.owner !== userID) {
+            //check if in sharholders
+            return new UnauthorizedException()
+        }
+
+        let sum = 0
+
+        for (let index = 0; index < priceIds.length; index++) {
+                    sum = sum + priceIds[index].price       
+        }
+        const paymentForm = await this.prisma.paymentForms.create({data: {
+            storeId: storeId,
+            currency: store.currency,
+            status: 'Live',
+            amount: sum,
+            testmode: store.testmode,
+            trialPeriod: trialLength,
+            cancelUrl: cancelUrl,
+            successUrl: successUrl,
+            collectBilling: collectBilling,
+            collectPhone: collectPhoneNumber,
+            pricesIds: priceIds,
+            productIds: ProductIds,
+            productNames: [],
+            companyName: store.name,
+        }})
+
+        console.log('paymentform id ', paymentForm.id)
+
+        return res.send({message: 'Success', paymentFormId: paymentForm.id}).status(200)
+
+    }
+
+    async fetchPaymentForms(res: Response, userId : string, storeId : any) {
+        if (storeId.id === null) {
+            return new BadRequestException('no store id')
+        }
+        const paymentForms = await this.prisma.paymentForms.findMany({where: { storeId: storeId.id }});
+        const store = await this.prisma.companies.findUnique({where: { id: storeId.id } });
+        console.log(paymentForms)
+
+        if (store.owner !== userId ) {
+            //check if shareholders
+            return new UnauthorizedException()
+        }
+
+        return res.send({message:'Success', paymentForms}).status(200)
     }
 }

@@ -1,7 +1,8 @@
-import { BadRequestException, Body, Controller, Get, Param, Post, Render, Req, Res } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, Post, Render, Req,  Res, UseGuards } from '@nestjs/common';
 import { CheckoutService } from './checkout.service';
 import { Request, Response } from 'express';
-import { checkoutSessionDto } from './dto/checkout.dto';
+import { PaymentFormDto, checkoutSessionDto } from './dto/checkout.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('checkout')
 export class CheckoutController {
@@ -24,4 +25,19 @@ export class CheckoutController {
         return res.send(checkoutSession)
        }
     }
+
+    @Post('createPaymentForm')
+    @UseGuards(AuthGuard)
+    createPaymentLink(@Body() dto: PaymentFormDto, @Req() req , @Res() res : Response ) {
+        const userId = req.user.sub;
+        return this.checkoutService.createPaymentForm(dto, userId, res)
+    }
+
+    @Get('fetchPaymentForms/:id')
+    @UseGuards(AuthGuard)
+    fetchPayments(@Req() req, @Res() res: Response, @Param() id : string) {
+        const userId = req.user.sub;
+        return this.checkoutService.fetchPaymentForms(res, userId, id)
+    }
+
 }

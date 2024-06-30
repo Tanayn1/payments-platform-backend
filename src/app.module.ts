@@ -12,11 +12,12 @@ import { PaymentsModule } from './payments/payments.module';
 import { ApiKeysModule } from './api-keys/api-keys.module';
 import { StoresModule } from './stores/stores.module';
 import { ProductsModule } from './products/products.module';
+import { WebhooksModule } from './webhooks/webhooks.module';
 
 
 
 @Module({
-  imports: [AuthModule, UsersModule, PrismaModule, CheckoutModule, PaymentsModule, ApiKeysModule, StoresModule, ProductsModule],
+  imports: [AuthModule, UsersModule, PrismaModule, CheckoutModule, PaymentsModule, ApiKeysModule, StoresModule, ProductsModule, WebhooksModule],
   controllers: [AppController],
   providers: [AppService, PrismaService, StoresService, CheckoutService],
 })

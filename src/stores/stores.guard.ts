@@ -6,11 +6,12 @@ import {
   } from '@nestjs/common';
   import { JwtService } from '@nestjs/jwt';
   import { Request } from 'express';
-import { jwtSecret } from './utils/constants';
+import { jwtSecret } from 'src/auth/utils/constants';
+import { PrismaService } from 'src/prisma/prisma.service';
   
   @Injectable()
   export class AuthGuard implements CanActivate {
-    constructor(private jwtService: JwtService) {}
+    constructor(private jwtService: JwtService, private prisma: PrismaService) {}
   
     async canActivate(context: ExecutionContext): Promise<boolean> {
       const request = context.switchToHttp().getRequest();
@@ -28,6 +29,8 @@ import { jwtSecret } from './utils/constants';
         // 💡 We're assigning the payload to the request object here
         // so that we can access it in our route handlers
         request['user'] = payload; 
+        const userID = payload.user.sub
+        
       } catch {
         throw new UnauthorizedException('Token Expired Or Not Valid');
       }
